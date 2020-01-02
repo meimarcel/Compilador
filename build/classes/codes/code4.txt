@@ -1,0 +1,7 @@
+programa teste;
+inicio
+    a1 := Marcel;
+    a2 := Joao;
+fim
+    
+

@@ -1,0 +1,25 @@
+programa teste;
+
+    tipo 
+        aluno = Aluno;
+        professor = Professor;
+
+    var 
+        a1, a2: Aluno;
+        p1, p2: Professor;
+
+
+    procedimento pula_linha;
+        var 
+            linha1 : String;
+    inicio
+        linha2 := quebra_linha;
+        imprima(linha3);
+    fim
+
+inicio
+    a1 := Marcel;
+    a2 := Joao;
+fim
+    
+

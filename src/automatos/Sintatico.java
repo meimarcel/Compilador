@@ -6,6 +6,8 @@
 
 package automatos;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import util.Classe;
 import util.Token;
@@ -18,6 +20,8 @@ import util.Token;
 public class Sintatico {
     private static Token token;
     private static List<String> code;
+    private static List<String> types = new ArrayList<String>(Arrays.asList("inteiro","real","caractere"));
+    private static int linha = 1;
     
     public static void setCode(List<String> text) {
         code = text;
@@ -30,27 +34,38 @@ public class Sintatico {
     public static String sintatico() {
         token = Lexico2.getTokens(code);
         if(!token.getToken().equals("programa")) return "Erro: \"programa\" esperado";
-        
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: identificador esperado";
-        
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         if(!token.getToken().equals(";")) return "Erro: \";\" esperado";
-        
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
-        String msg = bloco();         
-        return (msg.equals("")? "Executado Com Sucesso!" : msg);
+        String msg = bloco();
+        if(msg.equals("")) {
+            token = Lexico2.getTokens(code);
+            linha = token.getLinha();
+            if(!token.getClasse().equals(Classe.FIM_LEITURA)) {
+                return "Linhas não reconhecidas após o término do código na linha: "+linha;
+            } else {
+                return "Executado Com Sucesso!";
+            }
+        }
+        return msg+" na linha: "+linha;
     }
 
     private static String bloco() {
         String msg = "";
         if(token.getToken().equals("tipo")) {
+            linha = token.getLinha();
             msg = declara_tipo();
             if(!msg.equals("")) {
                 return msg;
             }
         }
         if(token.getToken().equals("var")) {
+            linha = token.getLinha();
             msg = declara_var();
             if(!msg.equals("")) {
                 return msg;
@@ -58,12 +73,14 @@ public class Sintatico {
         }
         while(token.getToken().equals("procedimento") || token.getToken().equals("funcao")) {
             if(token.getToken().equals("funcao")) {
+                linha = token.getLinha();
                 msg = declara_funcao();
                 if(!msg.equals("")) {
                     return msg;
                 }
             }
             else {
+                linha = token.getLinha();
                 msg = declara_procedimento();
                 if(!msg.equals("")) {
                     return msg;
@@ -78,12 +95,16 @@ public class Sintatico {
         token = Lexico2.getTokens(code);
         do {
             if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: Identificador esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             if(!token.getToken().equals("=")) return "Erro: \"=\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
-            if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: tipo esperado";
+            if(!token.getClasse().equals(Classe.IDENTIFICADOR) && types.indexOf(token.getToken()) == -1) return "Erro: tipo esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             if(!token.getToken().equals(";")) return "Erro: \";\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
         } while(token.getClasse().equals(Classe.IDENTIFICADOR) && !token.getToken().equals("var"));
         return "";
@@ -98,10 +119,13 @@ public class Sintatico {
                 return msg;
             }
             if(!token.getToken().equals(":")) return "Erro: \":\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
-            if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: tipo esperado";
+            if(!token.getClasse().equals(Classe.IDENTIFICADOR) && types.indexOf(token.getToken()) == -1) return "Erro: tipo esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             if(!token.getToken().equals(";")) return "Erro: \";\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
         } while(token.getClasse().equals(Classe.IDENTIFICADOR));
         return "";
@@ -112,6 +136,7 @@ public class Sintatico {
         do {
             virgula = false;
             if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro Identificador esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             if(token.getToken().equals(",")) {virgula = true; token = Lexico2.getTokens(code);}
         } while(virgula == true);
@@ -122,8 +147,10 @@ public class Sintatico {
         String msg = "";
         token = Lexico2.getTokens(code);
         if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: Identificador esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         if(token.getToken().equals("(")) {
+            linha = token.getLinha();
             msg = parametros_formais();
             if(!msg.equals("")) {
                 return msg;
@@ -131,6 +158,7 @@ public class Sintatico {
             token = Lexico2.getTokens(code);
         }
         if(!token.getToken().equals(";")) return "Erro: \";\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         msg = bloco();
         if (!msg.equals("")) {
@@ -144,8 +172,10 @@ public class Sintatico {
         String msg = "";
         token = Lexico2.getTokens(code);
         if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: identificador esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         if(token.getToken().equals("(")) { 
+            linha = token.getLinha();
             msg = parametros_formais();
             if(!msg.equals("")) {
                 return msg;
@@ -153,10 +183,14 @@ public class Sintatico {
             token = Lexico2.getTokens(code);
         }
         if(!token.getToken().equals(":")) return "Erro: \":\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
-        if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: identificador esperado"; 
+        if(!token.getClasse().equals(Classe.IDENTIFICADOR) && types.indexOf(token.getToken()) == -1) return "Erro: identificador esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
-        if(!token.getToken().equals(";")) return "Erro: \";\" esperado";       
+        if(!token.getToken().equals(";")) return "Erro: \";\" esperado";      
+        linha = token.getLinha();
+        token = Lexico2.getTokens(code);
         msg = bloco();
         if (!msg.equals("")) {
             return msg;
@@ -177,17 +211,21 @@ public class Sintatico {
                 return msg;
             }
             if(!token.getToken().equals(":")) return "Erro: \":\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
-            if(!token.getClasse().equals(Classe.IDENTIFICADOR)) return "Erro: tipo esperado";
+            if(!token.getClasse().equals(Classe.IDENTIFICADOR) && types.indexOf(token.getToken()) == -1) return "Erro: tipo esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
         } while(token.getToken().equals(";"));
         if(!token.getToken().equals(")")) return "Erro: \")\" esperado";
+        linha = token.getLinha();
         return "";
     }
     
     private static String comando_composto() {
         String msg = "";
         if(!token.getToken().equals("inicio")) return "Erro: \"inicio\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         do {    
             msg = comando_sem_rotulo();
@@ -195,15 +233,18 @@ public class Sintatico {
                 return msg;
             }
             if(!token.getToken().equals(";")) return "Erro: \";\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
         } while(token.getClasse().equals(Classe.IDENTIFICADOR) || token.getToken().equals("se") || token.getToken().equals("enquanto"));
         if(!token.getToken().equals("fim")) return "Erro: \"fim\" esperado";
+        linha = token.getLinha();
         return "";
     }
     
     private static String comando_sem_rotulo() {
         String msg = "";
         if(token.getToken().equals("se")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = comando_condicional();
             if(!msg.equals("")) {
@@ -211,6 +252,7 @@ public class Sintatico {
             }
         }
         else if(token.getToken().equals("enquanto")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = comando_repetitivo();
             if(!msg.equals("")) {
@@ -218,6 +260,7 @@ public class Sintatico {
             }
         }
         else if(token.getToken().equals("leia")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = comando_leia();
             if(!msg.equals("")) {
@@ -225,6 +268,7 @@ public class Sintatico {
             }
         }
         else if(token.getToken().equals("imprima")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = comando_imprima();
             if(!msg.equals("")) {
@@ -232,8 +276,10 @@ public class Sintatico {
             }
         }
         else if(token.getClasse().equals(Classe.IDENTIFICADOR)) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             if(token.getToken().equals(":=")) {
+                linha = token.getLinha();
                 token = Lexico2.getTokens(code);
                 msg = expressao();
                 if(!msg.equals("")) {
@@ -241,13 +287,13 @@ public class Sintatico {
                 }
             }
             else if(token.getToken().equals("(")) {
-                token = Lexico2.getTokens(code);
+                linha = token.getLinha();
                 msg = lista_expressao();
                 if(!msg.equals("")) {
                     return msg;
                 }
-                token = Lexico2.getTokens(code);
                 if(!token.getToken().equals(")")) return "Erro: \")\" esperado";
+                linha = token.getLinha();
                 token = Lexico2.getTokens(code);
             }
         }
@@ -260,12 +306,14 @@ public class Sintatico {
             return msg;
         }
         if(!token.getToken().equals("entao")) return "Erro: \"entao\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         msg = comando_sem_rotulo();
         if(!msg.equals("")) {
             return msg;
         }
         if(token.getToken().equals("senao")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = comando_sem_rotulo();
             if(!msg.equals("")) {
@@ -281,6 +329,7 @@ public class Sintatico {
             return msg;
         }
         if(!token.getToken().equals("do")) return "Erro: \"do\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         msg = comando_sem_rotulo();
         return msg.equals("")? "" : msg;
@@ -288,24 +337,27 @@ public class Sintatico {
         
     private static String comando_leia() { 
         if(!token.getToken().equals("(")) return "Erro: \"(\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         String msg = lista_identificador();
         if(!msg.equals("")) {
             return msg;
         }
         if(!token.getToken().equals(")")) return "Erro: \")\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);
         return "";
     }
     
     private static String comando_imprima() {  
         if(!token.getToken().equals("(")) return "Erro: \"(\" esperado";
-        token = Lexico2.getTokens(code);
+        linha = token.getLinha();
         String msg = lista_expressao();
         if(!msg.equals("")) {
             return msg;
         }
         if(!token.getToken().equals(")")) return "Erro: \")\" esperado";
+        linha = token.getLinha();
         token = Lexico2.getTokens(code);     
         return "";
     }
@@ -313,6 +365,7 @@ public class Sintatico {
     private static String lista_expressao() {
         String msg = "";
         do {
+            token = Lexico2.getTokens(code);
             msg = expressao();
             if(!msg.equals("")) {
                 return msg;
@@ -329,6 +382,7 @@ public class Sintatico {
         }
         if(token.getToken().equals("=") || token.getToken().equals("<>") || token.getToken().equals("<") ||
             token.getToken().equals("<=") || token.getToken().equals(">") || token.getToken().equals(">=")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = expressao_simples();
             if(!msg.equals("")) {
@@ -344,6 +398,7 @@ public class Sintatico {
             return msg;
         }
         while(token.getToken().equals("+") || token.getToken().equals("-") || token.getToken().equals("ou")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = termo();
             if(!msg.equals("")) {
@@ -359,6 +414,7 @@ public class Sintatico {
             return msg;
         }
         while(token.getToken().equals("*") || token.getToken().equals("div") || token.getToken().equals("e")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = fator();
             if(!msg.equals("")) {
@@ -370,27 +426,32 @@ public class Sintatico {
 
     private static String fator() {
         String msg = "";
-        if(token.getClasse().equals(Classe.DIGITO)) token = Lexico2.getTokens(code);
+        if(token.getClasse().equals(Classe.DIGITO)){linha = token.getLinha(); token = Lexico2.getTokens(code);}
         else if(token.getToken().equals("(")) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             msg = expressao();
             if(!msg.equals("")) {
                 return msg;
             }
-            if(token.getToken().equals(")")) return "Erro: \")\" esperado";
+            if(!token.getToken().equals(")")) return "Erro: \")\" esperado";
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
         }
         else if(token.getClasse().equals(Classe.IDENTIFICADOR)) {
+            linha = token.getLinha();
             token = Lexico2.getTokens(code);
             if(token.getToken().equals("(")) {
-                token = Lexico2.getTokens(code);
+                linha = token.getLinha();
                 msg = lista_expressao();
                 if(!msg.equals("")) {
                     return msg;
                 }
-                if(token.getToken().equals(")")) token = Lexico2.getTokens(code);
+                if(token.getToken().equals(")")){linha = token.getLinha(); token = Lexico2.getTokens(code);}
                 else return "Erro: \")\" esperado";
             } 
+        } else {
+            return "Erro: \"idetificador | numero | função | expressão\" esperado";
         }
         return "";
     }

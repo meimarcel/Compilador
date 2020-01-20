@@ -8,7 +8,12 @@ programa teste;
         a1, a2: Aluno;
         p1, p2: Professor;
 
-
+    @@asdasdasdsad
+    @/dasdasd
+    asdasdad/@
+    //asdaasdasdadasd
+    asdasd//
+    
     procedimento pula_linha;
         var 
             linha1 : String;
@@ -16,10 +21,50 @@ programa teste;
         linha2 := quebra_linha;
         imprima(linha3);
     fim
+    
+    procedimento pula_linha(var posicaox,posicaoy : aluno; circulo : string);
+        var 
+            linha1 : String;
+    inicio
+        linha2 := quebra_linha;
+        imprima(linha3);
+    fim
+    
+    funcao pula_linha(var posicaox,posicaoy : aluno; circulo : string):inteiro;
+        var 
+            linha1 : String;
+    inicio
+        linha2 := quebra_linha;
+        imprima(linha3);
+    fim
+    
+    funcao pula_linha : string;
+        var 
+            linha1 : String;
+    inicio
+        linha2 := quebra_linha;
+        imprima(linha3);
+    fim
+    
 
 inicio
-    a1 := Marcel;
+    a1 := Marcel + P(5;23+4);
     a2 := Joao;
+    x := x + -45,56 div 45;
+    y := x * (100 +  x);
+    pa(asdasd; a + b);
+
+    se a > b entao
+        imprima(a);
+        
+    se a = b entao
+        leia(a,b,s)
+    senao
+        a := b + a;
+
+    enquanto a < b do
+        leia(b);
+        a := b * a;
+        imprima(a);
 fim
-    
 

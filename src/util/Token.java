@@ -11,15 +11,17 @@ package util;
  */
 public class Token {
     private Classe classe;
+    private int linha;
     private String token;
     
     public Token() {
         
     }
 
-    public Token(Classe classe, String token) {
+    public Token(Classe classe, String token, int linha) {
         this.classe = classe;
         this.token = token;
+        this.linha  = linha;
     }
 
     public Classe getClasse() {
@@ -38,6 +40,13 @@ public class Token {
         this.token = token;
     }
     
+    public int getLinha() {
+        return this.linha;
+    }
+    
+    public void setLinha(int linha) {
+        this.linha = linha;
+    }
     
     
 }

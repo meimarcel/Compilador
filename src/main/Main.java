@@ -33,6 +33,6 @@ public class Main {
         Sintatico.setCode(code);
         String status = Sintatico.sintatico();
         System.out.println(status);
-        System.out.println(Sintatico.getToken().getToken());
+        if(!status.equals("Executado Com Sucesso!")) System.out.println("Token Encontrado: "+Sintatico.getToken().getToken());
     }
 }

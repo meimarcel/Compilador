@@ -234,13 +234,13 @@ public class Lexico2 {
                     if(end) {
                         if(state == 1) {
                             if(PALAVRAS_RESERVADAS.indexOf(token) == -1) { 
-                                return new Token(Classe.IDENTIFICADOR, token);
+                                return new Token(Classe.IDENTIFICADOR, token, j + 1);
                             } else {
-                                return new Token(Classe.PALAVRA_RESERVADA, token);
+                                return new Token(Classe.PALAVRA_RESERVADA, token, j + 1);
                             }
                         } 
                         else if(state == 2) {
-                            return new Token(Classe.INVALIDO, token);
+                            return new Token(Classe.INVALIDO, token, j + 1);
                         }
                         state = 0;
                         token = "";
@@ -335,18 +335,18 @@ public class Lexico2 {
                     }
                     if(end) {
                         if(state == 1 || state == 4) {
-                            return new Token(Classe.DIGITO, token);
+                            return new Token(Classe.DIGITO, token, j + 1);
                         }
                         else if(state == 3) {
-                            return new Token(Classe.INVALIDO, token);
+                            return new Token(Classe.INVALIDO, token, j + 1);
                         }
                         else if(state == 2) {
-                            return new Token(Classe.SIMBOLO_ESPECIAL, token);
+                            return new Token(Classe.SIMBOLO_ESPECIAL, token, j + 1);
                         }
                         else if(state == 5) {
                             token += chars[i];
                             ++i;
-                            return new Token(Classe.SIMBOLO_ESPECIAL, token);
+                            return new Token(Classe.SIMBOLO_ESPECIAL, token, j + 1);
                         }
                         token = "";
                         state = 0;
@@ -448,10 +448,10 @@ public class Lexico2 {
                         if(state == 1) {
                             token += chars[i];
                             ++i;
-                            return new Token(Classe.SIMBOLO_ESPECIAL, token);
+                            return new Token(Classe.SIMBOLO_ESPECIAL, token, j + 1);
                         }
                         else if(state == 2 || state == 3 || state == 4 || state == 6 || state == 12) {
-                            return new Token(Classe.SIMBOLO_ESPECIAL, token);
+                            return new Token(Classe.SIMBOLO_ESPECIAL, token, j + 1);
                         }
                         token = "";
                         state = 0;
@@ -468,15 +468,15 @@ public class Lexico2 {
                 if(!chars[i].equals("\n") && automato1 && automato2 && automato3 && !PATTERN.matcher(chars[i]).matches()) {
                     String aux = chars[i];
                     i++;
-                    return new Token(Classe.INVALIDO, aux);
+                    return new Token(Classe.INVALIDO, aux, j + 1);
                 }
             }
             i = 0;
         }
         if((state == 13 || state == 14 || state == 9 || state == 10) && automato3) {
-            return new Token(Classe.INVALIDO,"Comentário não fechado");
+            return new Token(Classe.INVALIDO,"Comentário não fechado", j + 1);
         }
-        return null;
+        return new Token(Classe.FIM_LEITURA,"", j + 1);
     }
     
 }

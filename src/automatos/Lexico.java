@@ -237,16 +237,16 @@ public class Lexico {
                     if(end) {
                         if(state == 1) {
                             if(palavraReservadaList.indexOf(token) == -1) { 
-                                tokenList.add(new Token(Classe.IDENTIFICADOR, token));
-                                return new Token(Classe.IDENTIFICADOR, token);
+                                tokenList.add(new Token(Classe.IDENTIFICADOR, token,j+1));
+                                return new Token(Classe.IDENTIFICADOR, token,j+1);
                             } else {
-                                tokenList.add(new Token(Classe.PALAVRA_RESERVADA, token));
-                                return new Token(Classe.PALAVRA_RESERVADA, token);
+                                tokenList.add(new Token(Classe.PALAVRA_RESERVADA, token,j+1));
+                                return new Token(Classe.PALAVRA_RESERVADA, token,j+1);
                             }
                         } 
                         else if(state == 2) {
-                            tokenList.add(new Token(Classe.INVALIDO, token));
-                            return new Token(Classe.INVALIDO, token);
+                            tokenList.add(new Token(Classe.INVALIDO, token,j+1));
+                            return new Token(Classe.INVALIDO, token,j+1);
                         }
                         state = 0;
                         token = "";
@@ -340,14 +340,14 @@ public class Lexico {
                     }
                     if(end) {
                         if(state == 1 || state == 4) {
-                            tokenList.add(new Token(Classe.DIGITO, token));
-                            return new Token(Classe.DIGITO, token);
+                            tokenList.add(new Token(Classe.DIGITO, token,j+1));
+                            return new Token(Classe.DIGITO, token,j+1);
                         }
                         else if(state == 3) {
                             token = token.substring(0, token.length() - 1);
-                            tokenList.add(new Token(Classe.DIGITO, token));
+                            tokenList.add(new Token(Classe.DIGITO, token,j+1));
                             --i;
-                            return new Token(Classe.DIGITO, token);
+                            return new Token(Classe.DIGITO, token,j+1);
                         }
                         else if(state == 2) {
                             --i;
@@ -458,13 +458,13 @@ public class Lexico {
                     if(end) {
                         if(state == 1) {
                             token += chars[i];
-                            tokenList.add(new Token(Classe.SIMBOLO_ESPECIAL, token));
+                            tokenList.add(new Token(Classe.SIMBOLO_ESPECIAL, token,j+1));
                             ++i;
-                            return new Token(Classe.SIMBOLO_ESPECIAL, token);
+                            return new Token(Classe.SIMBOLO_ESPECIAL, token,j+1);
                         }
                         else if(state == 2 || state == 3 || state == 4 || state == 5 || state == 6 || state == 12) {
-                            tokenList.add(new Token(Classe.SIMBOLO_ESPECIAL, token));
-                            return new Token(Classe.SIMBOLO_ESPECIAL, token);
+                            tokenList.add(new Token(Classe.SIMBOLO_ESPECIAL, token,j+1));
+                            return new Token(Classe.SIMBOLO_ESPECIAL, token,j+1);
                         }
                         token = "";
                         state = 0;
@@ -481,16 +481,16 @@ public class Lexico {
                 if(!chars[i].equals("\n") && automato1 && automato2 && automato3 && !pattern.matcher(chars[i]).matches()) {
                     String aux = chars[i];
                     i++;
-                    tokenList.add(new Token(Classe.INVALIDO, aux));
-                    return new Token(Classe.INVALIDO, aux);
+                    tokenList.add(new Token(Classe.INVALIDO, aux,j+1));
+                    return new Token(Classe.INVALIDO, aux,j+1);
                 }
             }
             i = 0;
         }
         if((state == 13 || state == 14) && automato3) {
-            return new Token(Classe.INVALIDO,"Comentário não fechado");
+            return new Token(Classe.INVALIDO,"Comentário não fechado",j+1);
         }
-        return null;
+        return new Token(Classe.FIM_LEITURA,"",j+1);
     }
     
 }
